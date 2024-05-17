@@ -45,6 +45,7 @@ class Mouse():
     BUTTON_RIGHT = 3
     """
     def is_button_pressed(self, button):
+        pygame.event.pump()
         pressed_buttons = pygame.mouse.get_pressed()
         if(pressed_buttons[button-1] == 1):
             return True

@@ -29,7 +29,8 @@ from menu import Menu
 from option import MenuOption
 from player import Player
 from shot import Shot
-from game_play import GamePlay
+# from game_play import GamePlay
+from game_play_v2 import GamePlay
 
 difficulty_levels = {
     'FÁCIL': 1,
@@ -72,7 +73,9 @@ class Game:
             self.background_image.draw()
             
             if self.current_screen == "MENU":
-                                    
+                if self.keyboard.key_pressed("ESC"):
+                    break
+
                 self.menu.draw(self.window)
 
                 screen_name = self.menu.handle_click()
@@ -84,11 +87,11 @@ class Game:
                         time.sleep(0.2) # busy waiting
                     
             elif self.current_screen == "JOGAR":
-                game_play = GamePlay(difficulty=self.selected_difficulty)
+                game_play = None
+                game_play = GamePlay(difficulty=self.selected_difficulty, window=self.window)
                 game_play.run()
                 
-                if self.keyboard.key_pressed('esc'):
-                    self.current_screen = 'MENU'
+                self.current_screen = 'MENU'
                 
             elif self.current_screen == "DIFICULDADE":
                 self.difficulty_menu.draw(self.window)

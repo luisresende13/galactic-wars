@@ -1,9 +1,11 @@
 from PPlay.sprite import *
 
 class Shot:
-    def __init__(self, x, y, image_path='imgs/shots/shot-fire-1.png'):
+    def __init__(self, x, y, x_dir=0, y_dir=-1, image_path='imgs/shots/shot-fire-1.png'):
         self.x = x
         self.y = y
+        self.x_dir = x_dir
+        self.y_dir = y_dir
         self.sprite = Sprite(image_path)
 
         sprite_x = x - self.sprite.width / 2

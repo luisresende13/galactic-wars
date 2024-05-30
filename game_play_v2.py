@@ -7,13 +7,17 @@ from enemy import Enemy
 from game_math import calculate_horizontal_angle, calculate_horizontal_vertical_distances
 import math
 
-enemy_ = Enemy(0, 0, None, 'imgs/ships/enemy-2-60x58.png')
+enemy_ = Enemy(0, 0, None, 'imgs/ships/enemy-2-60x58.png')    
 
 class GamePlay:
     def __init__(self, difficulty, window=None):
         self.difficulty = difficulty
 
-        self.speed_player = 300 / self.difficulty
+        self.acceleration_player = 10 / self.difficulty
+        self.speed_player_x = 0
+        self.speed_player_y = 0
+        self.speed_player_max_x = 300 / self.difficulty
+        self.speed_player_max_y = 300 / self.difficulty
         self.speed_shot = 700 / self.difficulty
         self.speed_enemy = 200 / 1.3 * self.difficulty
         self.shot_min_rate = 6 / self.difficulty # shots per second
@@ -30,7 +34,7 @@ class GamePlay:
         player_x = self.window.width / 2
         player_y = self.window.height * 13 / 16 # bottom of the self.window
         
-        self.player = Player(player_x, player_y, 'imgs/ships/player.png')
+        self.player = Player(player_x, player_y, 'imgs/ships/player/player-360.png')
     
         self.shots = []
         self.enemies = []
@@ -63,88 +67,64 @@ class GamePlay:
                 break
 
             # ---
-            # MOVE THE PLAYER
+            # MOVE THE PLAYER WITH ACCELERATED MOVEMENT
 
-            if any(list(map(self.keyboard.key_pressed, ['D', 'A', 'S', 'W']))):
+            x_dir = 0
+            y_dir = 0
 
-                x_dir = 0
-                y_dir = 0
-                scene_x_dir = 0
-                scene_y_dir = 0
-    
-                if self.keyboard.key_pressed("D"):
-                    if self.player.sprite.x + self.player.sprite.width < self.window.width:
-                        x_dir += + 1
-                    else:
-                        scene_x_dir += - 1
-                        
-                if self.keyboard.key_pressed("A"):
-                    if self.player.sprite.x > 0:
-                        x_dir += - 1
-                    else:
-                        scene_x_dir += + 1
-    
-                if self.keyboard.key_pressed("S"):
-                    if self.player.sprite.y + self.player.sprite.height < self.window.height:
-                        y_dir += + 1
-                    else:
-                        scene_y_dir += - 1
-    
-                if self.keyboard.key_pressed("W"):
-                    if self.player.sprite.y > 0:
-                        y_dir += - 1
-                    else:
-                        scene_y_dir += + 1
-    
-                # delta_x = x_dir * self.speed_player  * self.window.delta_time()
-                # delta_y = y_dir * self.speed_player  * self.window.delta_time()
-                # scene_delta_x = scene_x_dir * self.speed_player  * self.window.delta_time()
-                # scene_delta_y = scene_y_dir * self.speed_player  * self.window.delta_time()
-    
-                # Use vectorial speed for each direction instead of the same full speed for each direction
-                distance = self.speed_player * self.window.delta_time()
-                angle_rad = math.atan2(y_dir, x_dir)
-                delta_x, delta_y = calculate_horizontal_vertical_distances(distance, angle_rad)
-                if y_dir == x_dir == 0:
-                    delta_x = delta_y = 0
-    
-                distance = self.speed_player * self.window.delta_time()
-                angle_rad = math.atan2(scene_y_dir, scene_x_dir)
-                scene_delta_x, scene_delta_y = calculate_horizontal_vertical_distances(distance, angle_rad)
-                if scene_x_dir == scene_y_dir == 0:
-                    scene_delta_x = scene_delta_y = 0
-    
-                self.player.move(delta_x, delta_y)
-    
-                for shot in self.shots:
-                    shot.move(scene_delta_x, scene_delta_y)
-    
-                for enemy in self.enemies:
-                    enemy.move(scene_delta_x, scene_delta_y)
-
-            # if self.keyboard.key_pressed("D"):
-            #     x_dir += + 1
-            #     if self.player.sprite.x + self.player.sprite.width < self.window.width:
-            #         move_x = self.speed_player  * self.window.delta_time()
-            #         self.player.move(move_x, 0)
+            if self.keyboard.key_pressed("D"):
+                x_dir += + 1
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-90.png')                
                     
-            # if self.keyboard.key_pressed("A"):
-            #     x_dir += - 1
-            #     if self.player.sprite.x > 0:
-            #         move_x = - 1 * self.speed_player  * self.window.delta_time()
-            #         self.player.move(move_x, 0)
+            if self.keyboard.key_pressed("A"):
+                x_dir += - 1
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-270.png')
 
-            # if self.keyboard.key_pressed("S"):
-            #     y_dir += + 1
-            #     if self.player.sprite.y + self.player.sprite.height < self.window.height:
-            #         move_y = self.speed_player  * self.window.delta_time()
-            #         self.player.move(0, move_y)
-                    
-            # if self.keyboard.key_pressed("W"):
-            #     y_dir += - 1
-            #     if self.player.sprite.y > 0:
-            #         move_y = - 1 * self.speed_player  * self.window.delta_time()
-            #         self.player.move(0, move_y)
+            if self.keyboard.key_pressed("S"):
+                y_dir += + 1
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-180.png')
+
+            if self.keyboard.key_pressed("W"):
+                y_dir += - 1
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-360.png')
+
+            if all([self.keyboard.key_pressed(key) for key in ("A", "W")]):
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-315.png')                
+            if all([self.keyboard.key_pressed(key) for key in ("A", "S")]):
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-225.png')                
+            if all([self.keyboard.key_pressed(key) for key in ("D", "W")]):
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-45.png')                
+            if all([self.keyboard.key_pressed(key) for key in ("D", "S")]):
+                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/player-135.png')                
+
+            
+            # Update player speed
+            speed_player_x = self.speed_player_x + x_dir * self.acceleration_player
+            speed_player_y = self.speed_player_y + y_dir * self.acceleration_player
+
+            if speed_player_x >= 0:
+                self.speed_player_x = min(speed_player_x, self.speed_player_max_x)
+            else:
+                self.speed_player_x = max(speed_player_x,  - 1 * self.speed_player_max_x)
+                
+            if speed_player_y >= 0:
+                self.speed_player_y = min(speed_player_y, self.speed_player_max_y)
+            else:
+                self.speed_player_y = max(speed_player_y, - 1 * self.speed_player_max_y)
+            
+            delta_x = self.speed_player_x  * self.window.delta_time()
+            delta_y = self.speed_player_y  * self.window.delta_time()
+            
+            scene_delta_x = -1 * delta_x
+            scene_delta_y = -1 * delta_y
+
+            # self.player.move(delta_x, delta_y)
+
+            for shot in self.shots:
+                shot.move(scene_delta_x, scene_delta_y)
+
+            for enemy in self.enemies:
+                enemy.move(scene_delta_x, scene_delta_y)
 
             
             # ---
@@ -221,8 +201,8 @@ class GamePlay:
             #     if shot.sprite.y <= 0:
             #         remove_shot_index.append(i)
     
-            for i in remove_shot_index:
-                del self.shots[i]
+            for index in remove_shot_index:
+                del self.shots[index]
                 print(f'N-SHOTS: {len(self.shots)}')
 
             # ---

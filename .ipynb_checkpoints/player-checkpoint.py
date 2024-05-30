@@ -4,10 +4,10 @@ class Player:
     def __init__(self, x, y, image_path='imgs/ships/player.png'):
         self.sprite = Sprite(image_path)
 
-        player_x = x - self.sprite.width / 2
-        player_y = y - self.sprite.height / 2
+        # player_x = x - self.sprite.width / 2
+        # player_y = y - self.sprite.height / 2
         
-        self.sprite.set_position(player_x, player_y)
+        self.sprite.set_position(x, y)
 
     def draw(self):
         self.sprite.draw()

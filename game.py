@@ -11,12 +11,13 @@ from PPlay.gameimage import GameImage
 from PPlay.mouse import Mouse
 from PPlay.sprite import Sprite
 
-from menu import Menu
-from option import MenuOption
-from player import Player
-from shot import Shot
-from game_play_v2 import GamePlay
-from image_util import get_screen_size, resize_background
+from game_play import GamePlay
+
+from modules.menu import Menu
+from modules.option import MenuOption
+from modules.player import Player
+from modules.shot import Shot
+from modules.image_util import get_screen_size, resize_background
 
 difficulty_levels = {
     'FÁCIL': 1,
@@ -28,7 +29,6 @@ class Game:
     def __init__(self, background_path='imgs/backgrounds/ai/ai-home-8.jpg'):
         screen_width, screen_height = get_screen_size()        
         self.window = Window(screen_width, screen_height)
-        # self.window.set_background_color((255, 255, 255))
         self.window.set_title('Menu')
         self.keyboard = self.window.get_keyboard()
         self.mouse = Mouse()

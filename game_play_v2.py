@@ -2,11 +2,11 @@ import time
 import math
 from PPlay.window import Window
 from PPlay.gameimage import GameImage
-from player import Player
-from shot import Shot
-from enemy import Enemy
-from game_math import calculate_horizontal_angle, calculate_horizontal_vertical_distances
-from image_util import get_screen_size, resize_background
+from modules.player import Player
+from modules.shot import Shot
+from modules.enemy import Enemy
+from modules.game_math import calculate_horizontal_angle, calculate_horizontal_vertical_distances
+from modules.image_util import get_screen_size, resize_background
 
 enemy_ = Enemy(0, 0, None, 'imgs/ships/enemy-2-60x58.png')    
 
@@ -78,31 +78,40 @@ class GamePlay:
             x_dir = 0
             y_dir = 0
 
+            image_path = None
             if self.keyboard.key_pressed("D"):
                 x_dir += + 1
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/90.png')                
+                image_path = 'imgs/ships/player/final/rotation/90.png'
                     
             if self.keyboard.key_pressed("A"):
                 x_dir += - 1
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/270.png')
+                image_path = 'imgs/ships/player/final/rotation/270.png'
 
             if self.keyboard.key_pressed("S"):
                 y_dir += + 1
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/180.png')
+                image_path = 'imgs/ships/player/final/rotation/180.png'
 
             if self.keyboard.key_pressed("W"):
                 y_dir += - 1
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/0.png')
+                image_path = 'imgs/ships/player/final/rotation/0.png'
 
             if all([self.keyboard.key_pressed(key) for key in ("A", "W")]):
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/315.png')                
-            if all([self.keyboard.key_pressed(key) for key in ("A", "S")]):
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/225.png')                
-            if all([self.keyboard.key_pressed(key) for key in ("D", "W")]):
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/45.png')                
-            if all([self.keyboard.key_pressed(key) for key in ("D", "S")]):
-                self.player = Player(self.player.sprite.x, self.player.sprite.y, 'imgs/ships/player/final/rotation/135.png')                
+                image_path = 'imgs/ships/player/final/rotation/315.png'
 
+            if all([self.keyboard.key_pressed(key) for key in ("A", "S")]):
+                image_path = 'imgs/ships/player/final/rotation/225.png'
+            
+            if all([self.keyboard.key_pressed(key) for key in ("D", "W")]):
+                image_path = 'imgs/ships/player/final/rotation/45.png'
+            
+            if all([self.keyboard.key_pressed(key) for key in ("D", "S")]):
+                image_path = 'imgs/ships/player/final/rotation/135.png'
+
+            # Rotate player with new angle
+            if image_path is not None:
+                x = self.player.sprite.x
+                y = self.player.sprite.y
+                self.player = Player(x, y, image_path)
             
             # Update player speed
             speed_player_x = self.speed_player_x + x_dir * self.acceleration_player
@@ -142,21 +151,6 @@ class GamePlay:
                 else:
                     self.player.move(delta_x, delta_y)
             
-            # ---
-            # SHOOT WITH SPACE
-            
-            # if self.keyboard.key_pressed("space"):
-            #     time_diff = time.time() - self.last_shot_time
-            #     if time_diff > 1 / self.shot_min_rate:
-            #         self.last_shot_time = time.time()
-                    
-            #         shot_x = self.player.sprite.x + self.player.sprite.width / 2
-            #         shot_y = self.player.sprite.y
-                    
-            #         new_shot = Shot(shot_x, shot_y, image_path='imgs/shots/shot-fire-3x-rot-final.png')
-            #         self.shots.append(new_shot)
-            #         print(f'NEW SHOT... N-SHOTS: {len(self.shots)}')
-
             # ---
             # CREATE MULTIDIRECTION SHOTS
 
@@ -202,23 +196,7 @@ class GamePlay:
                     remove_shots.append(shot)
     
             # ---
-            # MOVE SINGLE DIRECTION SHOT
-            
-            # move_shot_y = - 1 * self.speed_shot * self.window.delta_time()
-            # for shot in self.shots:
-            #     shot.move(0, move_shot_y)
-    
-            # ---
             # REMOVE SHOT
-
-            # remove_shot_index = []
-            # for i, shot in enumerate(self.shots):
-            #     if shot.sprite.y <= 0:
-            #         remove_shot_index.append(i)
-    
-            # for index in remove_shot_index:
-            #     del self.shots[index]
-            #     print(f'N-SHOTS: {len(self.shots)}')
 
             for shot in remove_shots:
                 del self.shots[self.shots.index(shot)]
@@ -263,7 +241,6 @@ class GamePlay:
                         delta_x, delta_y = calculate_horizontal_vertical_distances(distance, angle_rad)
                                 
                         enemy.move(delta_x, delta_y)
-                    
             
             # ---
             # Draw elements

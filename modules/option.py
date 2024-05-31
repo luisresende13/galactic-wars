@@ -1,6 +1,7 @@
 from PPlay.sprite import *
 from PPlay.mouse import *
 from PPlay.window import *
+# from mouse import Mouse
 
 class MenuOption:
     def __init__(self, x, y, text):

@@ -2,11 +2,12 @@ import time
 import math
 from PPlay.window import Window
 from PPlay.gameimage import GameImage
-from player import Player
-from shot import Shot
-from enemy import Enemy
-from game_math import calculate_horizontal_angle, calculate_horizontal_vertical_distances
-from image_util import get_screen_size, resize_background
+
+from modules.player import Player
+from modules.shot import Shot
+from modules.enemy import Enemy
+from modules.game_math import calculate_horizontal_angle, calculate_horizontal_vertical_distances
+from modules.image_util import get_screen_size, resize_background
 
 enemy_ = Enemy(0, 0, None, 'imgs/ships/enemy-2-60x58.png')
 

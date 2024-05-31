@@ -35,13 +35,14 @@ class GamePlay:
         background_resized_path = 'imgs/backgrounds/game-play-resized.jpg'
         resize_background(background_path, background_resized_path)
         self.background = GameImage(background_resized_path)
-        
-        x = self.window.width / 2
-        y = self.window.height / 2  # 13 / 16 # bottom of the self.window
-        
-        self.player = Player(x, y, 'imgs/ships/player/final/rotation/0.png')
+                
+        self.player = Player(0, 0, 'imgs/ships/player/final/rotation/0.png')
         # self.player = Player(x, y, 'imgs/ships/player/player-360.png')
-    
+
+        x = self.window.width / 2 - self.player.sprite.width / 2
+        y = self.window.height * 3 / 4 - self.player.sprite.height / 2
+        self.player.sprite.set_position(x, y)
+        
         self.shots = []
         self.enemies = []
 
@@ -140,16 +141,30 @@ class GamePlay:
                 for enemy in self.enemies:
                     enemy.move(scene_delta_x, scene_delta_y)
 
+            
             else:
-                if self.player.sprite.x < 0 or self.player.sprite.y < 0 or self.player.sprite.x > self.window.width - self.player.sprite.width or self.player.sprite.y > self.window.height - self.player.sprite.height:
+                should_move_scene_x = (self.player.sprite.x < 0 and delta_x < 0) or (self.player.sprite.x > self.window.width - self.player.sprite.width and delta_x > 0)
+                should_move_scene_y = (self.player.sprite.y < 0 and delta_y < 0) or (self.player.sprite.y > self.window.height - self.player.sprite.height and delta_y > 0)
+
+                if should_move_scene_x:
                     for shot in self.shots:
-                        shot.move(scene_delta_x, scene_delta_y)
+                        shot.move(scene_delta_x, 0)
         
                     for enemy in self.enemies:
-                        enemy.move(scene_delta_x, scene_delta_y)
-    
-                else:
-                    self.player.move(delta_x, delta_y)
+                        enemy.move(scene_delta_x, 0)
+
+                if should_move_scene_y:
+                    for shot in self.shots:
+                        shot.move(0, scene_delta_y)
+        
+                    for enemy in self.enemies:
+                        enemy.move(0, scene_delta_y)
+
+                if not should_move_scene_x:
+                    self.player.move(delta_x, 0)
+
+                if not should_move_scene_y:
+                    self.player.move(0, delta_y)
             
             # ---
             # CREATE MULTIDIRECTION SHOTS
@@ -216,7 +231,7 @@ class GamePlay:
                 
 
                 # Secondly, stop abruptly
-                are_enemies_positioning = self.enemies[0].sprite.y + 0.5 * self.enemies[0].sprite.height < self.window.height * 0.10
+                are_enemies_positioning = self.enemies[0].sprite.y + 0.5 * self.enemies[0].sprite.height < self.window.height * 0.15
                 if not are_enemies_positioning and self.enemies_status == 'positioning':
                     self.enemies_status = 'positioned'
                     self.enemies_positioned_time = time.time()

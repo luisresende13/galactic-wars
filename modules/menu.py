@@ -1,4 +1,4 @@
-from option import MenuOption
+from modules.option import MenuOption
 
 class Menu:
     def __init__(self, options):

@@ -1,22 +1,7 @@
 '''
-TO-DO:
-
-dontpad.com/invaders-Luciano
-
---------- Instructions ---------
-1. SHIP MOVES HORIZONTALLY AND STOPS AT THE WALL
-2. SHOOTING:
-    2.1 Create empty list of shots
-    2.2 If (space): Create new shot; position sprite; append to list;
-    2.3 Later, run through the list and draw shots.
-    2.4 Exclude shot if collide with end of screen
-
-3. Create global variable difficulty (values: 1, 2, 3)
-    3.1 Update difficulty on difficulty menu button click
-
-4. Add reloading time:
-    4.1 Shot needs to wait minimum time to be fired
-
+TRABALHO FINAL
+LABORATÓRIO DE JOGOS
+2024/1
 '''
 
 import time
@@ -24,13 +9,14 @@ import time
 from PPlay.window import Window
 from PPlay.gameimage import GameImage
 from PPlay.mouse import Mouse
+from PPlay.sprite import Sprite
 
 from menu import Menu
 from option import MenuOption
 from player import Player
 from shot import Shot
-# from game_play import GamePlay
 from game_play_v2 import GamePlay
+from image_util import get_screen_size, resize_background
 
 difficulty_levels = {
     'FÁCIL': 1,
@@ -39,27 +25,41 @@ difficulty_levels = {
 }
 
 class Game:
-    def __init__(self):
-        self.window = Window(1280, 720)
-        self.window.set_background_color((255, 255, 255))
+    def __init__(self, background_path='imgs/backgrounds/ai/ai-home-8.jpg'):
+        screen_width, screen_height = get_screen_size()        
+        self.window = Window(screen_width, screen_height)
+        # self.window.set_background_color((255, 255, 255))
         self.window.set_title('Menu')
         self.keyboard = self.window.get_keyboard()
         self.mouse = Mouse()
-        self.background_image = GameImage('imgs/backgrounds/ai-home-8-1280x1280.jpg')
         self.current_screen = 'MENU'
         self.selected_difficulty = 1
+
+        # Resize background image to fit the shape of the screen
+        background_resized_path = 'imgs/backgrounds/resized.jpg'
+        resize_background(background_path, background_resized_path)
+        self.background = GameImage(background_resized_path)
+
+        ww = self.window.width
+        wh = self.window.height
+        
+        option_ = Sprite('imgs/button.png')
+        optw = option_.width
+        opth = option_.height
+
+        menu_x = ww / 2 - optw / 2
         
         menu_options = [
-            MenuOption(493, 330, "JOGAR"),
-            MenuOption(493, 330 + 20 + 64, "DIFICULDADE"),
-            MenuOption(493, 330 + 2 * 20 + 2 * 64, "RANKING"),
-            MenuOption(493, 330 + 3 * 20 + 3 * 64, "SAIR")
+            MenuOption(menu_x, 330, "JOGAR"),
+            MenuOption(menu_x, 330 + 20 + 64, "DIFICULDADE"),
+            MenuOption(menu_x, 330 + 2 * 20 + 2 * 64, "RANKING"),
+            MenuOption(menu_x, 330 + 3 * 20 + 3 * 64, "SAIR")
         ]
         
         difficulty_options = [
-            MenuOption(493, 330, "FÁCIL"),
-            MenuOption(493, 330 + 20 + 64, "MÉDIO"),
-            MenuOption(493, 330 + 2 * 20 + 2 * 64, "DIFÍCIL"),
+            MenuOption(menu_x, 330, "FÁCIL"),
+            MenuOption(menu_x, 330 + 20 + 64, "MÉDIO"),
+            MenuOption(menu_x, 330 + 2 * 20 + 2 * 64, "DIFÍCIL"),
         ]
 
         self.menu = Menu(menu_options)
@@ -70,7 +70,7 @@ class Game:
             self.window.update()
 
             self.window.set_background_color((255, 255, 255))
-            self.background_image.draw()
+            self.background.draw()
             
             if self.current_screen == "MENU":
                 if self.keyboard.key_pressed("ESC"):
@@ -88,7 +88,7 @@ class Game:
                     
             elif self.current_screen == "JOGAR":
                 game_play = None
-                game_play = GamePlay(difficulty=self.selected_difficulty, window=self.window)
+                game_play = GamePlay(self.selected_difficulty, self.window)
                 game_play.run()
                 
                 self.current_screen = 'MENU'

@@ -1,18 +1,18 @@
 import time
+import math
 from PPlay.window import Window
 from PPlay.gameimage import GameImage
 from player import Player
 from shot import Shot
 from enemy import Enemy
 from game_math import calculate_horizontal_angle, calculate_horizontal_vertical_distances
-import math
+from image_util import get_screen_size, resize_background
 
 enemy_ = Enemy(0, 0, None, 'imgs/ships/enemy-2-60x58.png')
 
 class GamePlay:
-    def __init__(self, difficulty, window=None):
+    def __init__(self, difficulty, window=None, background_path="imgs/backgrounds/deep_space_gray_1280x720.png"):
         self.difficulty = difficulty
-
         self.speed_player = 300 / self.difficulty
         self.speed_shot = 700 / self.difficulty
         self.speed_enemy = 200 / 1.3 * self.difficulty
@@ -20,17 +20,21 @@ class GamePlay:
         self.last_shot_time = time.time()
 
         if window is None:
-            window = Window(1280, 720)
+            screen_width, screen_height = get_screen_size()
+            self.window = Window(screen_width, screen_height)
 
         self.window = window
         self.window.set_title("Game Play")
         self.keyboard = self.window.get_keyboard()
-        self.background = GameImage("imgs/backgrounds/deep_space_gray_1280x720.png")
-        
+
+        background_resized_path = 'imgs/backgrounds/game-play-resized.jpg'
+        resize_background(background_path, background_resized_path)
+        self.background = GameImage(background_resized_path)
+
         player_x = self.window.width / 2
         player_y = self.window.height * 13 / 16 # bottom of the self.window
         
-        self.player = Player(player_x, player_y, 'imgs/ships/player.png')
+        self.player = Player(player_x, player_y, 'imgs/ships/player/final/player-mask-sm.png')
     
         self.shots = []
         self.enemies = []

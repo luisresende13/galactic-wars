@@ -11,7 +11,7 @@ from PPlay.gameimage import GameImage
 from PPlay.mouse import Mouse
 from PPlay.sprite import Sprite
 
-from game_play_v2 import GamePlay
+from game_play_v3 import GamePlay
 
 from modules.menu import Menu
 from modules.option import MenuOption

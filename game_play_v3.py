@@ -1,11 +1,10 @@
 import time
-import math
 
 from PPlay.window import Window
 from PPlay.gameimage import GameImage
 
-from modules.player import Player
-from modules.shot import Shot
+from modules.player_v2 import Player
+from modules.shot_v2 import Shot
 from modules.enemy import Enemy
 from modules.game_math import calculate_horizontal_angle, calculate_horizontal_vertical_distances
 from modules.image_util import get_screen_size, resize_background
@@ -16,12 +15,7 @@ class GamePlay:
     def __init__(self, difficulty, window=None, background_path="imgs/backgrounds/deep_space_gray_1280x720.png", fixed_player=False):
         self.difficulty = difficulty
         self.fixed_player = fixed_player
-        self.acceleration_player = 6 / self.difficulty
-        self.speed_player_x = 0
-        self.speed_player_y = 0
-        self.speed_player_x_max = 300 / self.difficulty
-        self.speed_player_y_max = 300 / self.difficulty
-        self.speed_shot = 700 / self.difficulty
+        self.speed_shots = 700 / self.difficulty
         self.speed_enemy = 200 / 1.3 * self.difficulty
         self.shot_min_rate = 6 / self.difficulty # shots per second
         self.player_points = 0
@@ -40,9 +34,12 @@ class GamePlay:
         background_resized_path = 'imgs/backgrounds/game-play-resized.jpg'
         resize_background(background_path, background_resized_path)
         self.background = GameImage(background_resized_path)
-                
-        self.player = Player(0, 0, 'imgs/ships/player/final/rotation/0.png')
-        # self.player = Player(x, y, 'imgs/ships/player/player-360.png')
+
+        acceleration = 3 / self.difficulty
+        speed_x_max = 450 / self.difficulty
+        speed_y_max = 450 / self.difficulty
+        
+        self.player = Player(acceleration, speed_x_max, speed_y_max)
 
         x = self.window.width / 2 - self.player.sprite.width / 2
         y = self.window.height * 3 / 4 - self.player.sprite.height / 2
@@ -80,62 +77,12 @@ class GamePlay:
                 break
 
             # ---
-            # MOVE THE PLAYER WITH ACCELERATED MOVEMENT
+            # MOVE AND ROTATE THE PLAYER IF MOVEMENT KEYS PRESSED
 
-            x_dir = 0
-            y_dir = 0
-
-            image_path = None
-            if self.keyboard.key_pressed("D"):
-                x_dir += + 1
-                image_path = 'imgs/ships/player/final/rotation/90.png'
-                    
-            if self.keyboard.key_pressed("A"):
-                x_dir += - 1
-                image_path = 'imgs/ships/player/final/rotation/270.png'
-
-            if self.keyboard.key_pressed("S"):
-                y_dir += + 1
-                image_path = 'imgs/ships/player/final/rotation/180.png'
-
-            if self.keyboard.key_pressed("W"):
-                y_dir += - 1
-                image_path = 'imgs/ships/player/final/rotation/0.png'
-
-            if all([self.keyboard.key_pressed(key) for key in ("A", "W")]):
-                image_path = 'imgs/ships/player/final/rotation/315.png'
-
-            if all([self.keyboard.key_pressed(key) for key in ("A", "S")]):
-                image_path = 'imgs/ships/player/final/rotation/225.png'
+            self.player.accelerate()
             
-            if all([self.keyboard.key_pressed(key) for key in ("D", "W")]):
-                image_path = 'imgs/ships/player/final/rotation/45.png'
-            
-            if all([self.keyboard.key_pressed(key) for key in ("D", "S")]):
-                image_path = 'imgs/ships/player/final/rotation/135.png'
-
-            # Rotate player with new angle
-            if image_path is not None:
-                x = self.player.sprite.x
-                y = self.player.sprite.y
-                self.player = Player(x, y, image_path)
-            
-            # Update player speed
-            speed_player_x = self.speed_player_x + x_dir * self.acceleration_player
-            speed_player_y = self.speed_player_y + y_dir * self.acceleration_player
-
-            if speed_player_x >= 0:
-                self.speed_player_x = min(speed_player_x, self.speed_player_x_max)
-            else:
-                self.speed_player_x = max(speed_player_x,  - 1 * self.speed_player_x_max)
-                
-            if speed_player_y >= 0:
-                self.speed_player_y = min(speed_player_y, self.speed_player_y_max)
-            else:
-                self.speed_player_y = max(speed_player_y, - 1 * self.speed_player_y_max)
-            
-            delta_x = self.speed_player_x  * self.window.delta_time()
-            delta_y = self.speed_player_y  * self.window.delta_time()
+            delta_x = self.player.speed_x  * self.window.delta_time()
+            delta_y = self.player.speed_y  * self.window.delta_time()
             
             scene_delta_x = -1 * delta_x
             scene_delta_y = -1 * delta_y
@@ -190,26 +137,25 @@ class GamePlay:
                 if time_diff > 1 / self.shot_min_rate:
                     self.last_shot_time = time.time()
                     
-                    shot_x = self.player.sprite.x + self.player.sprite.width / 2
-                    shot_y = self.player.sprite.y + self.player.sprite.width / 2
-                    
-                    new_shot = Shot(shot_x, shot_y, x_dir, y_dir, image_path='imgs/shots/shot-ball-1-sm.png')
-                    self.shots.append(new_shot)
+                    x = self.player.sprite.x + self.player.sprite.width / 2
+                    y = self.player.sprite.y + self.player.sprite.width / 2
+                     
+                    shot = Shot(x_dir, y_dir, self.speed_shots, 'imgs/shots/shot-ball-1-sm.png')
+                    shot.sprite.set_position(x, y)
+                    self.shots.append(shot)
 
             # ---
             # MOVE MULTIDIRECTION SHOTS
 
             for shot in self.shots:
-                distance = self.speed_shot * self.window.delta_time()
-                angle_rad = math.atan2(shot.y_dir, shot.x_dir)
-                delta_x, delta_y = calculate_horizontal_vertical_distances(distance, angle_rad)
-                shot.move(delta_x, delta_y)
-
+                delta_time = self.window.delta_time()
+                shot.auto_move(delta_time)
+                
             # ---
-            # REMOVE MULTIDIRECTION SHOTS
+            # REMOVE MULTIDIRECTION SHOTS IF OUTSIDE WINDOW
 
             remove_shots = []
-            for i, shot in enumerate(self.shots):
+            for shot in self.shots:
                 if shot.sprite.y <= - shot.sprite.height or shot.sprite.y >= self.window.height or shot.sprite.x <= - shot.sprite.width or shot.sprite.x >= self.window.width:
                     remove_shots.append(shot)
     
@@ -282,8 +228,8 @@ class GamePlay:
                 # Filter shots inside the "box" of enemies (OPTIMIZATION # 1)
                 shots_in_enemy_box = []
                 for shot in self.shots:
-                    if shot.x + shot.sprite.width > enemy_x_min and shot.x < enemy_x_max:
-                        if shot.y + shot.sprite.height > enemy_y_min and shot.y < enemy_y_max:
+                    if shot.sprite.x + shot.sprite.width > enemy_x_min and shot.sprite.x < enemy_x_max:
+                        if shot.sprite.y + shot.sprite.height > enemy_y_min and shot.sprite.y < enemy_y_max:
                             shots_in_enemy_box.append(shot)
         
                 # ---
@@ -321,7 +267,6 @@ class GamePlay:
                     self.last_enemy_dead_time = new_enemy_dead_time
          
                 for enemy in remove_enemies:
-                    
                     delta_points = self.points_base
                     delta_points = delta_points / time_between_kills # REWARD MORE POINTS IF TIME BETWEEN KILLS DECREASES 
                     delta_points = delta_points / self.difficulty # REWARD MORE POINTS IF DIFFICULTY IS LOWER
@@ -336,8 +281,8 @@ class GamePlay:
             
             self.background.draw()
 
-            self.window.draw_text(f'Vel-X: {self.speed_player_x}', 20, self.window.height - 80, size=20, color=(255, 255, 255), font_name="arial")
-            self.window.draw_text(f'Vel-Y: {self.speed_player_y}', 20, self.window.height - 40, size=20, color=(255, 255, 255), font_name="arial")
+            self.window.draw_text(f'Vel-X: {self.player.speed_x}', 20, self.window.height - 80, size=20, color=(255, 255, 255), font_name="arial")
+            self.window.draw_text(f'Vel-Y: {self.player.speed_y}', 20, self.window.height - 40, size=20, color=(255, 255, 255), font_name="arial")
 
             for shot in self.shots:
                 shot.draw()

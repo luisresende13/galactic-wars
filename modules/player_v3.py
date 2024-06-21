@@ -2,7 +2,7 @@ from PPlay.sprite import Sprite
 from PPlay.window import Window
 
 class Player(Sprite):
-    def __init__(self, acceleration, speed_x_max, speed_y_max):
+    def __init__(self, acceleration=None, speed_x_max=None, speed_y_max=None):
         super().__init__('imgs/ships/player/final/rotation/0.png')  # Initialize the Sprite
         self.keyboard = Window.get_keyboard()
         

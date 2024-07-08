@@ -18,7 +18,8 @@ def distance(sprite1, sprite2):
 class Orb(Sprite):
     def __init__(
         self,
-        image_path='imgs/ships/orb_16.png',
+        image_path='imgs/ships/orb-1-24px.png',
+        image_path_locked='imgs/ships/orb-3-24px.png',
         speed=600,
         speed_max=600,
         radius=120,
@@ -35,6 +36,7 @@ class Orb(Sprite):
     ):
         super().__init__(image_path)
 
+        self.image_path_locked = image_path_locked
         self.speed = speed
         self.speed_max = speed_max
         self.radius = radius
@@ -58,6 +60,12 @@ class Orb(Sprite):
         self.prev_x = self.x
         self.prev_y = self.y
 
+        self.speed_x = 0
+        self.speed_y = 0
+
+        self.is_locked = False
+        self.locked_start_time = None
+        self.time_locked = None
 
     def move(self, delta_x, delta_y):
         self.set_position(self.x + delta_x, self.y + delta_y)
@@ -123,6 +131,9 @@ class Orb(Sprite):
         # MOVE THE ORBS
         
         if self.state == 'resting':
+            self.speed_x = 0
+            self.speed_y = 0
+
             if time.time() - self.time > self.wait:
                 self.state = 'seeking'
     
@@ -136,6 +147,10 @@ class Orb(Sprite):
             delta_y = (delta_y / norm) * dist
     
             self.move(delta_x, delta_y)
+
+            self.speed_x = delta_x / delta_time
+            self.speed_y = delta_y / delta_time
+
             if distance(self, target) < self.track_distance:
                 self.state = 'tracking'
 
@@ -155,6 +170,9 @@ class Orb(Sprite):
     
             self.move(delta_x, delta_y)
 
+            self.speed_x = delta_x / delta_time
+            self.speed_y = delta_y / delta_time
+
             if distance(self, target) > self.track_distance:
                 self.state = 'seeking'
                 self.speed = self.speed_max
@@ -167,7 +185,26 @@ class Orb(Sprite):
                 self.state = 'locked'
                 
         elif self.state == 'locked':
+            if not self.is_locked:
+                self.is_locked = True
+                self.locked_start_time = time.time()
+                
+
+                x = self.x
+                y = self.y
+                super().__init__(self.image_path_locked)
+                self.set_position(x, y)
+
+            self.time_locked = time.time() - self.locked_start_time
+
+            delta_x = self.curr_x - self.x
+            delta_y = self.curr_y - self.y
+
+            self.speed_x = delta_x / delta_time
+            self.speed_y = delta_y / delta_time
+            
             # Move the orb with sinusoidal movements to circulate around the target
             self.x = self.curr_x
             self.y = self.curr_y
+
 

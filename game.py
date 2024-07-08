@@ -15,8 +15,6 @@ from game_play_v5 import GamePlay
 
 from modules.menu import Menu
 from modules.option import MenuOption
-from modules.player import Player
-from modules.shot import Shot
 from modules.image_util import get_screen_size, resize_background
 
 difficulty_levels = {

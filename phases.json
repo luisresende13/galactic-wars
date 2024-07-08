@@ -1,0 +1,202 @@
+[
+    {
+        "level": 1,
+        "player": {},
+        "orbs": [
+            {
+                "n": 3,
+                "wait": 0,
+                "wait_between": 2,
+                "config": {
+                    "image_path": "imgs/ships/orb-1-24px.png",
+                    "image_path_locked": "imgs/ships/orb-3-24px.png",
+                    "speed": 600,
+                    "life": 3,
+                    "state": "resting"
+                }
+            },
+            {
+                "n": 3,
+                "wait": 0,
+                "wait_between": 2,
+                "config": {
+                    "image_path": "imgs/ships/orb-1-24px.png",
+                    "image_path_locked": "imgs/ships/orb-3-24px.png",
+                    "speed": 600,
+                    "life": 3,
+                    "state": "resting"
+                }
+            }
+        ],
+        "waves": [
+            {
+                "enemies": [
+                    {
+                        "n_enemies": 3,
+                        "min_dist": 900,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/enemy-2-42x41.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    },
+                    {
+                        "n_enemies": 3,
+                        "min_dist": 900,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/enemy-3-32px.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    }
+                ]
+            },
+            {
+                "enemies": [
+                    {
+                        "n_enemies": 5,
+                        "min_dist": 900,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/enemy-2-42x41.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    },
+                    {
+                        "n_enemies": 5,
+                        "min_dist": 900,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/orb.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "level": 1,
+        "player": {},
+        "orbs": [
+            {
+                "n": 4,
+                "wait": 0,
+                "wait_between": 2,
+                "config": {
+                    "image_path": "imgs/ships/orb-1-24px.png",
+                    "image_path_locked": "imgs/ships/orb-3-24px.png",
+                    "speed": 600,
+                    "life": 3,
+                    "state": "resting"
+                }
+            },
+            {
+                "n": 4,
+                "wait": 0,
+                "wait_between": 2,
+                "config": {
+                    "image_path": "imgs/ships/orb-1-24px.png",
+                    "image_path_locked": "imgs/ships/orb-3-24px.png",
+                    "speed": 600,
+                    "life": 3,
+                    "state": "resting"
+                }
+            }
+        ],
+        "waves": [
+            {
+                "enemies": [
+                    {
+                        "n_enemies": 5,
+                        "min_dist": 500,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/enemy-2-42x41.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    },
+                    {
+                        "n_enemies": 5,
+                        "min_dist": 500,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/enemy-3-32px.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    }
+                ]
+            },
+            {
+                "enemies": [
+                    {
+                        "n_enemies": 5,
+                        "min_dist": 500,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/enemy-2-42x41.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    },
+                    {
+                        "n_enemies": 5,
+                        "min_dist": 500,
+                        "max_dist": 4000,
+                        "config": {
+                            "image_path": "imgs/ships/orb.png",
+                            "life": 1,
+                            "speed": 200,
+                            "speed_shot": 600,
+                            "rate_shot": 1,
+                            "damage_shot": 1,
+                            "path_shot": "imgs/shots/shot-ball-1-sm.png",
+                            "state": "seeking"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

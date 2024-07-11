@@ -24,7 +24,7 @@ difficulty_levels = {
 }
 
 class Game:
-    def __init__(self, background_path='imgs/backgrounds/ai/ai-home-8.jpg'):
+    def __init__(self, background_path='imgs/wallpapers/ai-home-8.jpg'):
         screen_width, screen_height = get_screen_size()        
         self.window = Window(screen_width, screen_height)
         self.window.set_title('Menu')
@@ -34,7 +34,7 @@ class Game:
         self.selected_difficulty = 1
 
         # Resize background image to fit the shape of the screen
-        background_resized_path = 'imgs/backgrounds/resized.jpg'
+        background_resized_path = 'imgs/wallpapers/resized-cache.jpg'
         resize_background(background_path, background_resized_path)
         self.background = GameImage(background_resized_path)
 

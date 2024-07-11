@@ -29,7 +29,7 @@ class Orb(Sprite):
         rotation_angle_rate=20,
         state='resting',
         wait=0,
-        track_distance=100,
+        track_distance=80,
         lock_distance='auto',
         smooth_power=3,
         life=3,
@@ -140,8 +140,10 @@ class Orb(Sprite):
         if self.state == 'seeking':
             # Move orb towards seeking the target
             dist = self.speed * delta_time
-            delta_x = target.x + target.width / 2 - self.x - self.width / 2
-            delta_y = target.y + target.height / 2 - self.y - self.height / 2
+            delta_x = self.curr_x + self.width / 2 - self.x - self.width / 2
+            delta_y = self.curr_y + self.height / 2 - self.y - self.height / 2
+            # delta_x = target.x + target.width / 2 - self.x - self.width / 2
+            # delta_y = target.y + target.height / 2 - self.y - self.height / 2
             norm = (delta_x ** 2 + delta_y ** 2) ** 0.5
             delta_x = (delta_x / norm) * dist
             delta_y = (delta_y / norm) * dist
@@ -188,7 +190,6 @@ class Orb(Sprite):
             if not self.is_locked:
                 self.is_locked = True
                 self.locked_start_time = time.time()
-                
 
                 x = self.x
                 y = self.y

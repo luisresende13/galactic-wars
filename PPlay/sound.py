@@ -59,6 +59,6 @@ class Sound():
         self.loop = repeat
 
     def fadeout(self, time_ms):
-        pygame.mixer.music.fadeout(time)
+        pygame.mixer.music.fadeout(time_ms)
 
 

@@ -104,7 +104,7 @@ class GamePlay:
         # self.phases = json.load(open('phases.json', 'r'))
 
         # Start phase counter
-        self.phase = 0
+        self.phase = 1 # starts in zero
 
         # Set background
         background_path = self.phases[0]['background']
@@ -128,7 +128,7 @@ class GamePlay:
 
         # Enemies
         self.enemies = []
-        self.enemy_wave_counter = 0
+        self.enemy_wave_counter = 0  # starts in zero
         self.created_enemy_wave = False
         self.window_has_enemy_prev = False
         # self.create_enemy_cloud(100)
@@ -146,28 +146,28 @@ class GamePlay:
         self.game_ended = False
 
         # Audio sounds
-        self.sound_action = Sound('audio/action.mp3')
         self.sound_suspense = Sound('audio/suspense.mp3')
+        self.sound_action = Sound('audio/action.mp3')
         # self.sound_action = Sound('audio/explosion.mp3')
         # self.sound_action = Sound('audio/you_lose.mp3')
         # self.sound_action = Sound('audio/you_win.mp3')
 
         self.sound_action.loop = True
         self.sound_action.volume = 100
-        self.sound_suspense.loop = True
-        self.sound_suspense.volume = 100
+        # self.sound_suspense.loop = True
+        # self.sound_suspense.volume = 100
 
-        self.sound_suspense.play()
-        
+        self.sound_action.play()
 
+    
     # # Update difficulty
     def increase_difficulty(self, delta=1):
         self.difficulty += delta
-        self.player.acceleration = 300 - 1.0 * (self.difficulty - 1) # good value: 5.0, 10.0 ...
-        self.player.speed_x_max = 450 - 100 * (self.difficulty - 1) # good value: 500.0, 750.0 ...
-        self.player.speed_y_max = 450 - 100 * (self.difficulty - 1) # good value: 500.0, 750.0 ...
-        self.player.speed_shot = 600 - 150 * (self.difficulty - 1)
-        self.player.rate_shot = 4 - 1 * (self.difficulty - 1) # shots per second
+        self.player.acceleration = 400 - 1.0 * (self.difficulty - 1) # good value: 5.0, 10.0 ...
+        self.player.speed_x_max = 550 - 100 * (self.difficulty - 1) # good value: 500.0, 750.0 ...
+        self.player.speed_y_max = 550 - 100 * (self.difficulty - 1) # good value: 500.0, 750.0 ...
+        self.player.speed_shot = 750 - 150 * (self.difficulty - 1)
+        self.player.rate_shot = 6 - 1 * (self.difficulty - 1) # shots per second
 
     # def create_enemy_cloud(self, n_enemies=8, x_lim=(-10000, 10000), y_lim=(-10000, 10000)):
         # xi = np.random.uniform(x_lim[0], x_lim[1], n_enemies)
@@ -208,6 +208,9 @@ class GamePlay:
             enemy.set_position(x, y)
             enemy.last_shot_time = time.time()
 
+            if 'mothership' in config['image_path']:
+                enemy._id = 'mothership'
+                
             self.enemies.append(enemy)
 
     def create_enemy_row(self, n_enemies=8, speed=200, enemy_row_width_prct=0.7, enemy_row_positioned_y_prct=0.15):
@@ -370,32 +373,32 @@ class GamePlay:
             # ---
             # UPDATE AUDIO
         
-            window_has_enemy = self.window_has_enemy()
-            if window_has_enemy != self.window_has_enemy_prev:
-                print('window_has_enemy:', window_has_enemy)
-                if window_has_enemy:
-                    if self.sound_suspense.is_playing():
-                        # self.sound_suspense.fadeout(3000)
-                        self.sound_suspense.stop()
+            # window_has_enemy = self.window_has_enemy()
+            # if window_has_enemy != self.window_has_enemy_prev:
+            #     print('window_has_enemy:', window_has_enemy)
+            #     if window_has_enemy:
+            #         if self.sound_suspense.is_playing():
+            #             # self.sound_suspense.fadeout(3000)
+            #             self.sound_suspense.stop()
 
-                    if self.sound_action.is_playing():
-                        self.sound_action.stop()
+            #         if self.sound_action.is_playing():
+            #             self.sound_action.stop()
 
-                    self.sound_action.load(self.sound_action.sound_file)
-                    self.sound_action.play()
+            #         self.sound_action.load(self.sound_action.sound_file)
+            #         self.sound_action.play()
 
-                else:
-                    if self.sound_action.is_playing():
-                        # self.sound_action.fadeout(3000)
-                        self.sound_action.stop()
+            #     else:
+            #         if self.sound_action.is_playing():
+            #             # self.sound_action.fadeout(3000)
+            #             self.sound_action.stop()
 
-                    if self.sound_suspense.is_playing():
-                        self.sound_suspense.stop()
+            #         if self.sound_suspense.is_playing():
+            #             self.sound_suspense.stop()
                     
-                    self.sound_suspense.load(self.sound_suspense.sound_file)
-                    self.sound_suspense.play()
+            #         self.sound_suspense.load(self.sound_suspense.sound_file)
+            #         self.sound_suspense.play()
                 
-                self.window_has_enemy_prev = window_has_enemy
+            #     self.window_has_enemy_prev = window_has_enemy
 
             # ---
             # MOVE EXPLOSIONS AT CONSTANT SPEED
@@ -646,7 +649,8 @@ class GamePlay:
                 t = time.time()
                 time_diff = t - enemy.last_shot_time
 
-                is_enemy_on_window = (enemy.x + enemy.width > 0 and enemy.x < self.window.width) and (enemy.y + enemy.height > 0 and enemy.y < self.window.height)
+                min_distance = 1000
+                is_enemy_on_window = (enemy.x + enemy.width > (-1 * min_distance) and enemy.x < self.window.width + min_distance) and (enemy.y + enemy.height > (- 1 * min_distance) and enemy.y < self.window.height + min_distance)
                 
                 if is_enemy_on_window and time_diff > 1 / enemy.rate_shot:
                     enemy.last_shot_time = time.time()
@@ -711,7 +715,7 @@ class GamePlay:
             # UPDATE WAVE AND/OR PHASE
 
             self.created_enemy_wave = False
-            if len(self.enemies) == 0:
+            if len(self.enemies) == 0 or (len(self.enemies) == 1 and self.enemies[0]._id == 'mothership'):
                 self.created_enemy_wave = True
                 
                 # ---
@@ -762,6 +766,11 @@ class GamePlay:
                     
                     phase = self.phases[self.phase - 1]
 
+                    # Update player
+                    for key, value in phase['player'].items():
+                        if key == 'life':
+                            self.player.life = value
+                    
                     # Set phase background
                     background_path = phase['background']
                     background_resized_path = 'imgs/backgrounds/background-resized.jpg'
@@ -777,7 +786,7 @@ class GamePlay:
                     self.background = GameImage(background_resized_path)
                     self.background.x = x
                     self.background.y = y
-
+                    
                     # Display message for next phase
                     text = f"LEVEL {self.phase}"
                     yellow = (255, 255, 0)  # Yellow
@@ -790,9 +799,9 @@ class GamePlay:
 
                     time.sleep(3)
                     
-                    if self.phase > 1:
+                    # if self.phase > 1:
                         # # Update difficulty
-                        self.increase_difficulty(delta=1)
+                        # self.increase_difficulty(delta=1)
 
                 phase = self.phases[self.phase - 1]
                 waves = phase['waves']

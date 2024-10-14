@@ -1,4 +1,4 @@
-MOTHERSHIP = { # NAVE TIPO FLOR
+MOTHERSHIP = { # NAVE MÃE
     "image_path": "imgs/ships/mothership-1-256px.png",
     "life": 90,
     "speed": 150,

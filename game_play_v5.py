@@ -104,7 +104,7 @@ class GamePlay:
         # self.phases = json.load(open('phases.json', 'r'))
 
         # Start phase counter
-        self.phase = 1 # starts in zero
+        self.phase = 0 # starts in zero
 
         # Set background
         background_path = self.phases[0]['background']
